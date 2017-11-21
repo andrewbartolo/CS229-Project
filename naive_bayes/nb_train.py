@@ -29,15 +29,15 @@ def findIndex(search_list, begin, end, key):
     return findIndex(search_list, begin, mid, key)
 
 # read in predefined word list (from LSTM demo)
-wordsList = np.load('training_data/wordsList.npy')
+wordsList = np.load('../training_data/wordsList.npy')
 print ('Loaded the word list!')
 #print wordsList
 wordsList = wordsList.tolist()
 wordsList.sort()
 
 # get statistics on training data
-positiveFiles = ['training_data/positiveReviews/' + f for f in listdir('training_data/positiveReviews') if isfile(join('training_data/positiveReviews/', f))]
-negativeFiles = ['training_data/negativeReviews/' + f for f in listdir('training_data/negativeReviews') if isfile(join('training_data/negativeReviews/', f))]
+positiveFiles = ['../training_data/positiveReviews_train/' + f for f in listdir('../training_data/positiveReviews_train') if isfile(join('../training_data/positiveReviews_train/', f))]
+negativeFiles = ['../training_data/negativeReviews_train/' + f for f in listdir('../training_data/negativeReviews_train') if isfile(join('../training_data/negativeReviews_train/', f))]
 numWords = []
 for pf in positiveFiles:
     with open(pf, "r") as f:

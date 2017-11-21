@@ -44,8 +44,8 @@ nb_neg_weights.close()
 nb_pos_weights.close()
 
 # test on test data
-positiveFiles = ['training_data/positiveReviews/' + f for f in listdir('training_data/positiveReviews') if isfile(join('training_data/positiveReviews/', f))]
-negativeFiles = ['training_data/negativeReviews/' + f for f in listdir('training_data/negativeReviews') if isfile(join('training_data/negativeReviews/', f))]
+positiveFiles = ['../training_data/positiveReviews_test/' + f for f in listdir('../training_data/positiveReviews_test') if isfile(join('../training_data/positiveReviews_test/', f))]
+negativeFiles = ['../training_data/negativeReviews_test/' + f for f in listdir('../training_data/negativeReviews_test') if isfile(join('../training_data/negativeReviews_test/', f))]
 total_files = 0
 incorrect   = 0
 for pf in positiveFiles:

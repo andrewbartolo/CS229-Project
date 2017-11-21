@@ -399999,7 +399999,7 @@ złotów
 ﬁnds
 ﬁrst
 ￥
-Total words: 5762988
-Number of unknown words: 83667
-Number of words in positive reviews: 2919353
-Number of words in negative reviews: 2843635
+Total words: 4048483
+Number of unknown words: 59349
+Number of words in positive reviews: 2041912
+Number of words in negative reviews: 2006571
