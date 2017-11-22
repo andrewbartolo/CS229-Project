@@ -50,8 +50,8 @@ nb_pos_weights.close()
 
 # test on test data (not adversarial or adversarial)
 if not adversarial_input:
-    positiveFiles = ['../training_data/positiveReviews_test/' + f for f in listdir('../training_data/positiveReviews_test') if isfile(join('../training_data/positiveReviews_test/', f))]
-    negativeFiles = ['../training_data/negativeReviews_test/' + f for f in listdir('../training_data/negativeReviews_test') if isfile(join('../training_data/negativeReviews_test/', f))]
+    positiveFiles = ['../stanford_test/pos/' + f for f in listdir('../stanford_test/pos') if isfile(join('../stanford_test/pos/', f))]
+    negativeFiles = ['../stanford_test/neg/' + f for f in listdir('../stanford_test/neg') if isfile(join('../stanford_test/neg/', f))]
 else:
     positiveFiles = ['../adversarial_data/positiveReviews_test/' + f for f in listdir('../adversarial_data/positiveReviews_test') if isfile(join('../adversarial_data/positiveReviews_test/', f))]
     negativeFiles = ['../adversarial_data/negativeReviews_test/' + f for f in listdir('../adversarial_data/negativeReviews_test') if isfile(join('../adversarial_data/negativeReviews_test/', f))]

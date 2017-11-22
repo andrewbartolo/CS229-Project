@@ -36,8 +36,8 @@ wordsList = wordsList.tolist()
 wordsList.sort()
 
 # get statistics on training data
-positiveFiles = ['../training_data/positiveReviews_train/' + f for f in listdir('../training_data/positiveReviews_train') if isfile(join('../training_data/positiveReviews_train/', f))]
-negativeFiles = ['../training_data/negativeReviews_train/' + f for f in listdir('../training_data/negativeReviews_train') if isfile(join('../training_data/negativeReviews_train/', f))]
+positiveFiles = ['../stanford_train/pos/' + f for f in listdir('../stanford_train/pos') if isfile(join('../stanford_train/pos/', f))]
+negativeFiles = ['../stanford_train/neg/' + f for f in listdir('../stanford_train/neg') if isfile(join('../stanford_train/neg/', f))]
 numWords = []
 for pf in positiveFiles:
     with open(pf, "r") as f:
