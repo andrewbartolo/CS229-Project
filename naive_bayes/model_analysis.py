@@ -1,4 +1,5 @@
 import numpy as np
+import sys
 
 # read in predefined word list (from LSTM demo)
 wordsList = np.load('../training_data/wordsList.npy')
@@ -25,51 +26,29 @@ print 'Loaded in trained model!'
 # process data and find maximum-ratio pos/neg or neg/pos keywords
 positive_slant = []
 negative_slant = []
-positive_top = [(0,0), (0,0), (0,0), (0,0), (0,0)]
-negative_top = [(0,0), (0,0), (0,0), (0,0), (0,0)]
+positive_top = []
+negative_top = []
+top_numbers = 10
+if '--number' in sys.argv:
+    top_numbers = int(sys.argv[2])
+for i in range (0, top_numbers):
+    positive_top.append((0, 0))
+    negative_top.append((0, 0))
 for i in range (0, len(wordsList)):
     positive_slant.append(float(positive_weights[i])/float(negative_weights[i]))
-    if positive_slant[i] > positive_top[0][0]:
-        positive_top[4] = positive_top[3]
-        positive_top[3] = positive_top[2]
-        positive_top[2] = positive_top[1]
-        positive_top[1] = positive_top[0]
-        positive_top[0] = (positive_slant[i], i)
-    elif positive_slant[i] > positive_top[1][0]:
-        positive_top[4] = positive_top[3]
-        positive_top[3] = positive_top[2]
-        positive_top[2] = positive_top[1]
-        positive_top[1] = (positive_slant[i], i)
-    elif positive_slant[i] > positive_top[2][0]:
-        positive_top[4] = positive_top[3]
-        positive_top[3] = positive_top[2]
-        positive_top[2] = (positive_slant[i], i)
-    elif positive_slant[i] > positive_top[3][0]:
-        positive_top[4] = positive_top[3]
-        positive_top[3] = (positive_slant[i], i)
-    elif positive_slant[i] > positive_top[4][0]:
-        positive_top[4] = (positive_slant[i], i)
+    for j in range (0, top_numbers):
+        if positive_slant[i] > positive_top[j][0]:
+            for k in reversed(range (j + 1, top_numbers)):
+                positive_top[k] = positive_top[k - 1]
+            positive_top[j] = (positive_slant[i], i)
+            break
     negative_slant.append(float(negative_weights[i])/float(positive_weights[i]))
-    if negative_slant[i] > negative_top[0][0]:
-        negative_top[4] = negative_top[3]
-        negative_top[3] = negative_top[2]
-        negative_top[2] = negative_top[1]
-        negative_top[1] = negative_top[0]
-        negative_top[0] = (negative_slant[i], i)
-    elif negative_slant[i] > negative_top[1][0]:
-        negative_top[4] = negative_top[3]
-        negative_top[3] = negative_top[2]
-        negative_top[2] = negative_top[1]
-        negative_top[1] = (negative_slant[i], i)
-    elif negative_slant[i] > negative_top[2][0]:
-        negative_top[4] = negative_top[3]
-        negative_top[3] = negative_top[2]
-        negative_top[2] = (negative_slant[i], i)
-    elif negative_slant[i] > negative_top[3][0]:
-        negative_top[4] = negative_top[3]
-        negative_top[3] = (negative_slant[i], i)
-    elif negative_slant[i] > negative_top[4][0]:
-        negative_top[4] = (negative_slant[i], i)
+    for j in range (0, top_numbers):
+        if negative_slant[i] > negative_top[j][0]:
+            for k in reversed(range (j + 1, top_numbers)):
+                negative_top[k] = negative_top[k - 1]
+            negative_top[j] = (negative_slant[i], i)
+            break
 print 'Positive Top'
 #print positive_top
 for i in range (0, len(positive_top)):
