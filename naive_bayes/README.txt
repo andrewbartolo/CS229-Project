@@ -1,6 +1,7 @@
 To train model, run "python nb_train.py"
 To test model, run "python nb_test.py"
 To test model on handcrafted adversarial input, run "python nb_test.py --handcrafted"
+To test model on training set, run "python nb_test.py --training"
 To test model on basic naive-Bayes-targeted adversary, run "python nb_test.py --basic_adversary"
     This adversary replaces the first word of each positive training review with one of the (randomly
     selected) top-5 negative-leaning words (and vice versa for negative training reviews).

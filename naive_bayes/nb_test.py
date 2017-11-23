@@ -32,10 +32,17 @@ def findIndex(search_list, begin, end, key):
 
 handcrafted_adversarial_input = False
 if ('--handcrafted' in sys.argv):
+    print 'Testing on handcrafted adversarial inputs.'
     handcrafted_adversarial_input = True
+
+training_set_input = False
+if ('--training' in sys.argv):
+    print 'Using training set as test set.'
+    training_set_input = True
 
 basic_naive_bayes_adversary = False
 if ('--basic_adversary' in sys.argv):
+    print 'Testing on basic naive-Bayes-targeted adversary.'
     basic_naive_bayes_adversary = True
 bayes_top_positive = ['edie', 'antwone', 'din', 'gunga', 'yokai']
 bayes_top_negative = ['boll', '410', 'uwe', 'tashan', 'hobgoblins']
@@ -61,6 +68,11 @@ negativeFiles = ['../stanford_test/neg/' + f for f in listdir('../stanford_test/
 if handcrafted_adversarial_input:
     positiveFiles = ['../adversarial_data/positiveReviews_test/' + f for f in listdir('../adversarial_data/positiveReviews_test') if isfile(join('../adversarial_data/positiveReviews_test/', f))]
     negativeFiles = ['../adversarial_data/negativeReviews_test/' + f for f in listdir('../adversarial_data/negativeReviews_test') if isfile(join('../adversarial_data/negativeReviews_test/', f))]
+elif training_set_input:
+    positiveFiles = ['../stanford_train/pos/' + f for f in listdir('../stanford_train/pos') if isfile(join('../stanford_train/pos/', f))]
+    negativeFiles = ['../stanford_train/neg/' + f for f in listdir('../stanford_train/neg') if isfile(join('../stanford_train/neg/', f))]
+
+
 
 total_files = 0
 incorrect   = 0
