@@ -62,10 +62,23 @@ X = vectorizer.fit_transform(reviews)
 #model = KMeans(n_clusters=num_k, init='k-means++', max_iter=1000, n_init=1)
 #model.fit(X)
 #pca = SparsePCA(n_components=2).fit(X.toArray())
+'''
 pca = PCA(n_components=2).fit(X.toarray())
 data2D = pca.transform(X.toarray())
-plt.scatter(data2D[:,0], data2D[:,1])
+plt.scatter(data2D[:len(data2D)/2,0], data2D[:len(data2D)/2,1], c='r')
+plt.scatter(data2D[len(data2D)/2:,0], data2D[len(data2D)/2:,1], c='k')
+#plt.scatter(data2D[:,0], data2D[:,1], c='k')
 plt.show()
+'''
+ndims = 4
+pca = PCA(n_components=ndims).fit(X.toarray())
+dataND = pca.transform(X.toarray())
+for i in range(ndims):
+    for j in range(i+1, ndims):
+        plt.scatter(dataND[:len(dataND)/2,i], dataND[:len(dataND)/2,j], c='r')
+        plt.scatter(dataND[len(dataND)/2:,i], dataND[len(dataND)/2:,j], c='k')
+        ##plt.scatter(data2D[:,0], data2D[:,1], c='k')
+        plt.show()
 
 #https://stackoverflow.com/questions/28160335/plot-a-document-tfidf-2d-graph/28205420#28205420
 #https://stackoverflow.com/questions/27889873/clustering-text-documents-using-scikit-learn-kmeans-in-python
