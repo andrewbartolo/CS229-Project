@@ -3,6 +3,7 @@
 training_data
 stanford_train
 stanford_test
+adversary_strongest-word-swap
 
 # quit adding .DS_Store files #
 # #############################
