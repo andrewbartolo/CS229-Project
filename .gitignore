@@ -5,6 +5,7 @@ stanford_train
 stanford_test
 adversary_strongest-word-swap
 adversary_strongest-3-word-swap
+adversary_strongest-5-word-swap
 
 # quit adding .DS_Store files #
 # #############################

@@ -52,6 +52,16 @@ if ('--strongest_word_adversary' in sys.argv):
     print 'Testing on strongest-word-swap adversary.'
     strongest_word_swap_adversary = True
 
+strongest_3_word_swap_adversary = False
+if ('--strongest_3_word_adversary' in sys.argv):
+    print 'Testing on strongest-3-word-swap adversary.'
+    strongest_3_word_swap_adversary = True
+
+strongest_5_word_swap_adversary = False
+if ('--strongest_5_word_adversary' in sys.argv):
+    print 'Testing on strongest-5-word-swap adversary.'
+    strongest_5_word_swap_adversary = True
+
 # read in trained model
 nb_neg_weights = open("model_data/negative_weights.txt", "r")
 nb_pos_weights = open("model_data/positive_weights.txt", "r")
@@ -79,6 +89,14 @@ elif training_set_input:
 elif strongest_word_swap_adversary:
     positiveFiles = ['../adversary_strongest-word-swap/pos/' + f for f in listdir('../adversary_strongest-word-swap/pos') if isfile(join('../adversary_strongest-word-swap/pos/', f))]
     negativeFiles = ['../adversary_strongest-word-swap/neg/' + f for f in listdir('../adversary_strongest-word-swap/neg') if isfile(join('../adversary_strongest-word-swap/neg/', f))]
+elif strongest_3_word_swap_adversary:
+    positiveFiles = ['../adversary_strongest-3-word-swap/pos/' + f for f in listdir('../adversary_strongest-3-word-swap/pos') if isfile(join('../adversary_strongest-3-word-swap/pos/', f))]
+    negativeFiles = ['../adversary_strongest-3-word-swap/neg/' + f for f in listdir('../adversary_strongest-3-word-swap/neg') if isfile(join('../adversary_strongest-3-word-swap/neg/', f))]
+elif strongest_5_word_swap_adversary:
+    positiveFiles = ['../adversary_strongest-5-word-swap/pos/' + f for f in listdir('../adversary_strongest-5-word-swap/pos') if isfile(join('../adversary_strongest-5-word-swap/pos/', f))]
+    negativeFiles = ['../adversary_strongest-5-word-swap/neg/' + f for f in listdir('../adversary_strongest-5-word-swap/neg') if isfile(join('../adversary_strongest-5-word-swap/neg/', f))]
+
+
 
 total_files = 0
 incorrect   = 0

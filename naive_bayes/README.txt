@@ -5,6 +5,15 @@ To test model on training set, run "python nb_test.py --training"
 To test model on basic naive-Bayes-targeted adversary, run "python nb_test.py --basic_adversary"
     This adversary replaces the first word of each positive training review with one of the (randomly
     selected) top-5 negative-leaning words (and vice versa for negative training reviews).
+To test model on strongest-word-swap adversary, run "python nb_test.py --strongest_word_adversary"
+    This adversary replaces the word that most strongly aligns with the correct classification
+    with a word that most strongly aligns with the incorrect classification.
+To test model on strongest-3-word-swap adversary, run "python nb_test.py --strongest_3_word_adversary"
+    This adversary replaces the three words that most strongly align with the correct classification
+    with three words that most strongly align with the incorrect classification.
+To test model on strongest-5-word-swap adversary, run "python nb_test.py --strongest_5_word_adversary"
+    This adversary replaces the five words that most strongly align with the correct classification
+    with five words that most strongly align with the incorrect classification.
 
 To get most positive-leaning and most negative-leaning words, run 
     "python model_analysis.py --number k" where k is the number of top
