@@ -12,11 +12,8 @@ for file in os.path.listdir(directory):
 
         f=open(filename,"r")
 
-        if f.mode == 'r': 
- 			contents =f.read()
- 			fl =f.readlines()
-   			for x in fl:
-   				print x
-
-    else:
-        print('No .txt file found!')
+        if f.mode == 'r':
+        	contents=f.read()
+        	fl=f.readlines()
+        	for x in fl:
+        		print x
