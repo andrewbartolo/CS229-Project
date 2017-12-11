@@ -20,9 +20,9 @@ UNKNOWN_WORD_VECTOR_IDX = 399999
 nPFiles = 12500
 nNFiles = 12500
 ckptInterval = 10000
-num_pos= 50
+num_pos=5
 end_pos=5 #250 default
-
+dict_start=44000
 INSERT_ADVERSARIAL = False
 # As found using Mark's Naive Bayes analysis
 advExsPos = ['edie', 'antwone', 'din', 'gunga', 'yokai']
@@ -47,10 +47,9 @@ def getSentenceMatrix(sentence):
     sentenceMatrix = np.zeros([batchSize, maxSeqLength],dtype='int32')
     cleanSentence = cleanSentences(sentence)
     split = cleanSentence.split()
-    count = 0
     for idxCtr, word in enumerate(split):
         if idxCtr>=250:
-            break 
+            break
         try:
             #sentenceMatrix[0, idxCtr] = binarySearchIndex(wordsList, word)
             sentenceMatrix[0, idxCtr] = binarySearchIndex(wordsList, word)
@@ -69,13 +68,19 @@ def generateAdversary(data, wordVectors, prediction, jacobian, origClass, sess):
         curr_word=data_adv_wordEmbedded[wordPos,:]
         curr_word=tf.reshape(curr_word,[1,50])
 
-        #pdb.set_trace()
-        dist_curr_word=tf.abs(tf.matmul(tf.sign(curr_word-wordVectors),tf.sign(jacobian[wordPos-end_pos].T)))
+        pdb.set_trace()
+        dist_curr_word=tf.abs(tf.matmul(tf.sign(curr_word-wordVectors[dict_start:,:]),tf.sign(jacobian[wordPos-end_pos].T)))
+        dist_matrix = sess.run(dist_curr_word)
+        min_dist = np.minimum(dist_matrix)
+        min_indices = np.where(dist_matrix == min_dist)
+        location = np.random.randint(np.size(min_indices), size = 1)
         
         #data_adv_wordEmbedded[wordPos,:]=wordVectors[tf.argmin(dist_curr_word),:]
         #data_adv_wordEmbedded=tf.reshape(data_adv,[1,50])
+        pdb.set_trace()
 
-        data_adv[0,wordPos]=sess.run(tf.argmin(dist_curr_word))
+        # data_adv[0,wordPos]=sess.run(tf.argmin(dist_curr_word))+dict_start
+        data_adv[0, wordPos] = min_indices[location] + dict_start
         data_adv=(data_adv).reshape((1,250))
 
         predictedSentimentNew=sess.run(prediction, feed_dict = {input_data: data_adv})[0]
@@ -113,6 +118,8 @@ def binarySearchIndex(a, x):
 # not the embeddings matrix, but the list
 wordsList = np.load('wordsList-lexic-sorted.npy').tolist()
 wordVectors = np.load('wordVectors-lexic-sorted.npy')
+
+#pdb.set_trace()
 
 nWordsInDict = len(wordsList)
 print("wordsList (%d words) loaded." % nWordsInDict)
@@ -248,11 +255,9 @@ with sess.as_default():
 
 # # Below is how you'd evaluate the sentiment of a single handcrafted sentence.
 
-
 inputText = "That movie was great."
-inputText = "Hollywood is a (white) boys’ club, and so is film criticism. Nowhere is this more evident than in the multitude of reviews published about Pixar’s Coco. The majority of critics have been positive in their remarks about the animated feature, but many lack the cultural competence to discuss the most Mexican aspects of the film. From calling Coco inauthentic to misspelling words in Spanish, the stockpile of opinions disseminated by major media sites has one glaring omission – not one of them is penned by a Latino writer. Hollywood is a (white) boys’ club, and so is film criticism. Nowhere is this more evident than in the multitude of reviews published about Pixar’s Coco. The majority of critics have been positive in their remarks about the animated feature, but many lack the cultural competence to discuss the most Mexican aspects of the film. From calling Coco inauthentic to misspelling words in Spanish, the stockpile of opinions disseminated by major media sites has one glaring omission – not one of them is penned by a Latino writer. Hollywood is a (white) boys’ club, and so is film criticism. Nowhere is this more evident than in the multitude of reviews published about Pixar’s Coco. The majority of critics have been positive in their remarks about the animated feature, but many lack the cultural competence to discuss the most Mexican aspects of the film. From calling Coco inauthentic to misspelling words in Spanish, the stockpile of opinions disseminated by major media sites has one glaring omission – not one of them is penned by a Latino writer. Hollywood is a (white) boys’ club, and so is film criticism. Nowhere is this more evident than in the multitude of reviews published about Pixar’s Coco. The majority of critics have been positive in their remarks about the animated feature, but many lack the cultural competence to discuss the most Mexican aspects of the film. From calling Coco inauthentic to misspelling words in Spanish, the stockpile of opinions disseminated by major media sites has one glaring omission – not one of them is penned by a Latino writer."
-
 #inputText = "Simply terrible."
+#inputText= "Movie was awesome and great!"
 inputMatrix = getSentenceMatrix(inputText)
 
 #
@@ -279,11 +284,11 @@ with sess.as_default():
     
     adv,newClass=generateAdversary(inputMatrix[np.newaxis,0],wordVectors,prediction,jac,origClass,sess)
 
-    pdb.set_trace()
+    #pdb.set_trace()
 
     print(adv)
     print('New Class= ', newClass)
-    for i in range(4):
+    for i in range(10):
         print(wordsList[adv[0][i]])
 
 
