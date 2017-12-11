@@ -14,6 +14,9 @@ originally_pos = 0
 originally_pos_classified_pos = 0
 originally_pos_changed_neg = 0
 
+# not the embeddings matrix, but the list
+wordsList = np.load('wordsList-lexic-sorted.npy').tolist()
+
 for fname in advFiles:
     with open(fname, "r") as f:
         #print fname
@@ -22,7 +25,8 @@ for fname in advFiles:
         example_num = int(fname.split('/')[-1].split('.')[0])
         original_classification = int(f.readline().split(' ')[-1].replace('\n', ''))
         new_classification = int(f.readline().split(' ')[-1].replace('\n', ''))
-        avg_num_words_changed += int(f.readline().split(' ')[-1].replace('\n', ''))
+        num_words_changed = int(f.readline().split(' ')[-1].replace('\n', ''))
+        avg_num_words_changed += num_words_changed
         f.readline() # "WordPositions"
         f.readline() # WordPositions information
         f.readline() # "OldWordVectorPositions"
@@ -49,18 +53,33 @@ for fname in advFiles:
             new_word_vector = new_word_vector.replace('  ', ' ')
         new_word_vector = [int(x) for x in new_word_vector.split(' ')]
         #print new_word_vector
+        old_review = ""
+        for wd in old_word_vector:
+            old_review += wordsList[wd] + " "
+        new_review = ""
+        for wd in new_word_vector:
+            new_review += wordsList[wd] + " "
+        if num_words_changed <= 3:
+            print old_review
+            print new_review
+            print ""
+            print ""
         if (example_num < 12500):
             originally_pos += 1
             if (original_classification == 0):
                 originally_pos_classified_pos += 1
                 if (new_classification == 1):
                     originally_pos_changed_neg += 1
+                    with open("../adversary_JSMA/pos/" + fname.split('/')[-1], "w") as out:
+                        out.write(new_review.encode("UTF-8"))
         else:
             originally_neg += 1
             if (original_classification == 1):
                 originally_neg_classified_neg += 1
                 if (new_classification == 0):
                     originally_neg_changed_pos += 1
+                    with open("../adversary_JSMA/neg/" + fname.split('/')[-1], "w") as out:
+                        out.write(new_review.encode("UTF-8"))
 avg_num_words_changed /= float(total)
 
 print "Total # examples: " + str(total)

@@ -24,8 +24,8 @@ ckptInterval = 10000
 num_pos= 35
 end_pos=250 #250 default
 dict_start=44000
-start_ind=23000
-end_ind=23100
+start_ind=23100
+end_ind=23200
 INSERT_ADVERSARIAL = False
 posFileSize=12500
 
