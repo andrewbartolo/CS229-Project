@@ -16,4 +16,4 @@ for file in os.path.listdir(directory):
         	contents=f.read()
         	fl=f.readlines()
         	for x in fl:
-        		print x
+        		print(x)
