@@ -188,7 +188,10 @@ with sess.as_default():
 
     for in_data_index in range(start_ind,end_ind):
         print('Input Data Index= '+str(in_data_index))
-        if len(pMatrix[np.newaxis,in_data_index])<=250:
+
+        pdb.set_trace()
+        
+        if len(pMatrix[pMatrix[in_data_index,:]>0])<=250:
             predictedSentiment=sess.run(prediction, feed_dict = {input_data: pMatrix[np.newaxis,in_data_index]})[0]
             #import pdb; pdb.set_trace()
             print(pMatrix[np.newaxis,in_data_index])
