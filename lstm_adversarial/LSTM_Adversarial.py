@@ -23,8 +23,8 @@ ckptInterval = 10000
 num_pos= 35
 end_pos=250 #250 default
 dict_start=44000
-start_ind=1000
-end_ind=1100
+start_ind=1004
+end_ind=1004
 INSERT_ADVERSARIAL = False
 # As found using Mark's Naive Bayes analysis
 advExsPos = ['edie', 'antwone', 'din', 'gunga', 'yokai']
@@ -177,6 +177,8 @@ pMatrix = np.load('pIDsMatrix-train.npy')
 nMatrix = np.load('nIDsMatrix-train.npy')
 print('Loaded pMatrix-train and nMatrix-train (index matrices)')
 
+#pdb.set_trace()
+
 config=tf.ConfigProto(allow_soft_placement=True)
 # config.gpu_options.allow_growth=True
 sess=tf.InteractiveSession(config=config)
@@ -217,14 +219,26 @@ with sess.as_default():
                 origClass=1
                 print('Original Class= '+str(origClass))
             
-            f.write("Original Class, %d\n" %(origClass))
+            f.write("OriginalClass, %d\n" %(origClass))
 
             adv,newClass=generateAdversary(pMatrix[np.newaxis,in_data_index],wordVectors,prediction,jac,origClass,sess)
 
             print(adv,newClass)
             print('New Class= '+str(np.argmax(sess.run(prediction, feed_dict = {input_data: pMatrix[np.newaxis,in_data_index]})[0])))
 
-            f.write("New Class, %d\n" %(newClass))
+            f.write("NewClass, %d\n" %(newClass))
+
+            numWordsChanged=0
+            wordPos=[]
+
+            for currWordPos in range(250):
+                if pMatrix[in_data_index,currWordPos]!=adv[currWordPos]:
+                    numWordsChanged=numWordsChanged+1
+                    wordPos.append(currWordPos)
+
+            f.write("NumberWordsChanged, %d\n" %(numWordsChanged))
+            for item in wordPos:
+                f.write("%s\n" % item)
 
             for item in pMatrix[in_data_index]:
                 f.write("%s\n" % item)
