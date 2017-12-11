@@ -20,9 +20,11 @@ UNKNOWN_WORD_VECTOR_IDX = 399999
 nPFiles = 12500
 nNFiles = 12500
 ckptInterval = 10000
-num_pos= 50
+num_pos= 35
 end_pos=250 #250 default
 dict_start=44000
+start_ind=1000
+end_ind=1010
 INSERT_ADVERSARIAL = False
 # As found using Mark's Naive Bayes analysis
 advExsPos = ['edie', 'antwone', 'din', 'gunga', 'yokai']
@@ -183,27 +185,33 @@ with sess.as_default():
     
     #tf.global_variables_initializer()
     tf.set_random_seed(100)
-    predictedSentiment=sess.run(prediction, feed_dict = {input_data: pMatrix[np.newaxis,2000]})[0]
-    #import pdb; pdb.set_trace()
-    print(pMatrix[np.newaxis,2000])
 
-    if predictedSentiment[0]>predictedSentiment[1]:
-        jac = sess.run([jac for jac in jacobian['0']], feed_dict = {input_data: pMatrix[np.newaxis,2000]})
-        origClass=0
-        print('Original Class= '+str(0))
-    else:
-        jac = sess.run([jac for jac in jacobian['1']], feed_dict = {input_data: pMatrix[np.newaxis,2000]})
-        origClass=1
-        print('Original Class= '+str(1))
+    for in_data_index in range(start_ind,end_ind):
+        print('Input Data Index= '+str(in_data_index))
+        if len(pMatrix[np.newaxis,in_data_index])<=250:
+            predictedSentiment=sess.run(prediction, feed_dict = {input_data: pMatrix[np.newaxis,in_data_index]})[0]
+            #import pdb; pdb.set_trace()
+            print(pMatrix[np.newaxis,in_data_index])
+
+            if predictedSentiment[0]>predictedSentiment[1]:
+                jac = sess.run([jac for jac in jacobian['0']], feed_dict = {input_data: pMatrix[np.newaxis,in_data_index]})
+                origClass=0
+                print('Original Class= '+str(0))
+            else:
+                jac = sess.run([jac for jac in jacobian['1']], feed_dict = {input_data: pMatrix[np.newaxis,in_data_index]})
+                origClass=1
+                print('Original Class= '+str(1))
     
-    adv,newClass=generateAdversary(pMatrix[np.newaxis,2000],wordVectors,prediction,jac,origClass,sess)
+            adv,newClass=generateAdversary(pMatrix[np.newaxis,in_data_index],wordVectors,prediction,jac,origClass,sess)
 
-    print(adv,newClass)
-    print('New Class= '+str(np.argmax(sess.run(prediction, feed_dict = {input_data: pMatrix[np.newaxis,2000]})[0])))
-    t2=time.time()
+            print(adv,newClass)
+            print('New Class= '+str(np.argmax(sess.run(prediction, feed_dict = {input_data: pMatrix[np.newaxis,in_data_index]})[0])))
+            t2=time.time()
 
-    print('time for single instance= '+str(t2-t1))
-    print('time for creating jacobian= '+str(t1-t0))
+            print('time for single instance= '+str(t2-t1))
+            print('time for creating jacobian= '+str(t1-t0))
+        else:
+            print('DITCHED EXAMPLE!')
 #pdb.set_trace()
 
 
@@ -257,7 +265,6 @@ with sess.as_default():
 
 inputText = "That movie was tetrafluoroborate whiteknights"
 inputText = "Hollywood is a (white) boys’ club, and so is film criticism. Nowhere is this more evident than in the multitude of reviews published about Pixar’s Coco. The majority of critics have been positive in their remarks about the animated feature, but many lack the cultural competence to discuss the most Mexican aspects of the film. From calling Coco inauthentic to misspelling words in Spanish, the stockpile of opinions disseminated by major media sites has one glaring omission – not one of them is penned by a Latino writer. Hollywood is a (white) boys’ club, and so is film criticism. Nowhere is this more evident than in the multitude of reviews published about Pixar’s Coco. The majority of critics have been positive in their remarks about the animated feature, but many lack the cultural competence to discuss the most Mexican aspects of the film. From calling Coco inauthentic to misspelling words in Spanish, the stockpile of opinions disseminated by major media sites has one glaring omission – not one of them is penned by a Latino writer. Hollywood is a (white) boys’ club, and so is film criticism. Nowhere is this more evident than in the multitude of reviews published about Pixar’s Coco. The majority of critics have been positive in their remarks about the animated feature, but many lack the cultural competence to discuss the most Mexican aspects of the film. From calling Coco inauthentic to misspelling words in Spanish, the stockpile of opinions disseminated by major media sites has one glaring omission – not one of them is penned by a Latino writer."
-
 #inputText = "Simply terrible."
 #inputText= "Movie was awesome and great!"
 inputMatrix = getSentenceMatrix(inputText)
