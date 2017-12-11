@@ -20,6 +20,8 @@ UNKNOWN_WORD_VECTOR_IDX = 399999
 nPFiles = 12500
 nNFiles = 12500
 ckptInterval = 10000
+num_pos=5
+end_pos=5 #250 default
 
 INSERT_ADVERSARIAL = False
 # As found using Mark's Naive Bayes analysis
@@ -32,10 +34,31 @@ def posAdvWord():
 def negAdvWord():
     return advExsNeg[randint(0,len(advExsNeg)-1)]
 
+strip_special_chars = re.compile("[^A-Za-z0-9 ]+")
+def cleanSentences(string):
+    '''
+    Cleans Sentences
+    '''
+    string = string.lower().replace("<br />", " ")
+    return re.sub(strip_special_chars, "", string.lower())
+    
+def getSentenceMatrix(sentence):
+    arr = np.zeros([batchSize, maxSeqLength])
+    sentenceMatrix = np.zeros([batchSize, maxSeqLength],dtype='int32')
+    cleanSentence = cleanSentences(sentence)
+    split = cleanSentence.split()
+    for idxCtr, word in enumerate(split):
+        try:
+            #sentenceMatrix[0, idxCtr] = binarySearchIndex(wordsList, word)
+            sentenceMatrix[0, idxCtr] = binarySearchIndex(wordsList, word)
+        except ValueError:
+            sentenceMatrix[0, idxCtr] = UNKNOWN_WORD_VECTOR_IDX
+    return sentenceMatrix
+
 def generateAdversary(data, wordVectors, prediction, jacobian, origClass, sess):
     data_adv=data
     data_adv_wordEmbedded=tf.squeeze(tf.nn.embedding_lookup(wordVectors,data),axis=0)
-    wordPos=249
+    wordPos=end_pos-1
 
     newClass=origClass
 
@@ -59,7 +82,7 @@ def generateAdversary(data, wordVectors, prediction, jacobian, origClass, sess):
             newClass=1
 
         wordPos=wordPos-1
-        if wordPos==250-250:
+        if wordPos==end_pos-1-num_pos:
             break
     
     return data_adv, newClass
@@ -128,15 +151,19 @@ predictionList=tf.split(prediction,2,axis=1)
 
 #pdb.set_trace()
 t0=time.time()
-jacobian = {str(k):[tf.gradients(pred_comp, data_inp)[0] for data_inp in data[-251:-1]] for k, pred_comp in enumerate(predictionList)}
+jacobian = {str(k):[tf.gradients(pred_comp, data_inp)[0] for data_inp in data[end_pos-num_pos:end_pos]] for k, pred_comp in enumerate(predictionList)}
 t1=time.time()
 
 pMatrix = np.load('pIDsMatrix-train.npy')
 nMatrix = np.load('nIDsMatrix-train.npy')
 print('Loaded pMatrix-train and nMatrix-train (index matrices)')
 
+config=tf.ConfigProto(allow_soft_placement=True)
+config.gpu_options.allow_growth=True
+sess=tf.InteractiveSession(config=config)
 #sess = tf.InteractiveSession()
-with tf.Session() as sess:
+#with tf.Session() as sess:
+with sess.as_default():
     saver = tf.train.Saver(tf.trainable_variables())
 
     # Restore the checkpointed model we trained on,
@@ -165,27 +192,10 @@ with tf.Session() as sess:
     print('New Class= '+str(np.argmax(sess.run(prediction, feed_dict = {input_data: pMatrix[np.newaxis,2000]})[0])))
     t2=time.time()
 
-    print('time for single instance'+str(t2-t1))
-    print('time for creating jacobian'+str(t1-t0))
+    print('time for single instance= '+str(t2-t1))
+    print('time for creating jacobian= '+str(t1-t0))
 #pdb.set_trace()
 
-
-
-# Currently not used in batch processing.
-# This method is useful if you'd like to evaluate
-# the sentiment of a single hand-crafted sentence.
-# def getSentenceMatrix(sentence):
-#     arr = np.zeros([batchSize, maxSeqLength])
-#     sentenceMatrix = np.zeros([batchSize, maxSeqLength],dtype='int32')
-#     cleanSentence = cleanSentences(sentence)
-#     split = cleanSentence.split()
-#     for idxCtr, word in enumerate(split):
-#         try:
-#             #sentenceMatrix[0, idxCtr] = binarySearchIndex(wordsList, word)
-#             sentenceMatrix[0, idxCtr] = binarySearchIndex(wordsList, word)
-#         except ValueError:
-#             sentenceMatrix[0, idxCtr] = UNKNOWN_WORD_VECTOR_IDX
-#     return sentenceMatrix
 
 # pMatrix = np.load('pIDsMatrix-train.npy')
 # nMatrix = np.load('nIDsMatrix-train.npy')
@@ -235,19 +245,39 @@ with tf.Session() as sess:
 
 # # Below is how you'd evaluate the sentiment of a single handcrafted sentence.
 
-# #inputText = "That movie was great."
-# inputText = "Simply terrible."
-# inputMatrix = getSentenceMatrix(inputText)
+inputText = "That movie was great."
+#inputText = "Simply terrible."
+inputMatrix = getSentenceMatrix(inputText)
 
-# predictedSentiment = sess.run(prediction, {input_data: inputMatrix})[0]
-# # predictedSentiment[0] represents output score for positive sentiment
-# # predictedSentiment[1] represents output score for negative sentiment
-# if (predictedSentiment[0] > predictedSentiment[1]):
-#     print("Positive Sentiment")
-# else:
-#     print("Negative Sentiment")
+#
+
+print(inputText)
+print(inputMatrix)
+#with tf.Session() as sess1:
+with sess.as_default():
+    predictedSentiment = sess.run(prediction, {input_data: inputMatrix[np.newaxis,0]})[0]
+# predictedSentiment[0] represents output score for positive sentiment
+# predictedSentiment[1] represents output score for negative sentiment
+    if (predictedSentiment[0] > predictedSentiment[1]):
+        print("Positive Sentiment")
+        jac = sess.run([jac for jac in jacobian['0']], feed_dict = {input_data: inputMatrix[np.newaxis,0]})
+        origClass=0
+        print('Original Class= '+str(0))
+    else:
+        print("Negative Sentiment")
+        jac = sess.run([jac for jac in jacobian['1']], feed_dict = {input_data: inputMatrix[np.newaxis,0]})
+        origClass=1
+        print('Original Class= '+str(1))
     
-# print("Done.")
+    print("Generating Adversary")
+    
+    adv,newClass=generateAdversary(inputMatrix[np.newaxis,0],wordVectors,prediction,jac,origClass,sess)
+
+    pdb.set_trace()
+
+    print(adv)
+    print('New Class= ', newClass)
+    #print('Adversary= ', wordsList[adv])
 
 
 # # In[14]:
