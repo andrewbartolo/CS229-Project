@@ -1,3 +1,26 @@
+import numpy as np
+from os import listdir
+from os.path import isfile, join
+
+advFiles = ['./adversary_info/' + f for f in listdir('./adversary_info') if isfile(join('./adversary_info/', f))]
+#print advFiles
+
+originally_neg = 0
+originally_pos = 0
+
+for fname in advFiles:
+    with open(fname, "r") as f:
+        print fname
+        example_num = int(fname.split('/')[-1].split('.')[0])
+        if (example_num < 12500):
+            originally_neg += 1
+        else:
+            originally_pos += 1
+        print f.readline()
+
+print "# originally positive files attempted: " + str(originally_neg)
+print "# originally negative files attempted: " + str(originally_pos)
+
 '''
 import os
 
@@ -19,6 +42,7 @@ for file in os.path.listdir(directory):
         	for x in fl:
         		print(x)
 '''
+'''
 from pathlib import Path
 
 #Change Directory for Reading Files
@@ -35,3 +59,4 @@ for path in pathlist:
     	fl=f.readlines()
     	for x in fl:
     		print(x)
+'''
