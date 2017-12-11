@@ -62,6 +62,11 @@ if ('--strongest_5_word_adversary' in sys.argv):
     print 'Testing on strongest-5-word-swap adversary.'
     strongest_5_word_swap_adversary = True
 
+jsma_adversary = False
+if ('--JSMA_adversary' in sys.argv):
+    print 'Testing on JSMA adversary.'
+    jsma_adversary = True
+
 # read in trained model
 nb_neg_weights = open("model_data/negative_weights.txt", "r")
 nb_pos_weights = open("model_data/positive_weights.txt", "r")
@@ -95,6 +100,10 @@ elif strongest_3_word_swap_adversary:
 elif strongest_5_word_swap_adversary:
     positiveFiles = ['../adversary_strongest-5-word-swap/pos/' + f for f in listdir('../adversary_strongest-5-word-swap/pos') if isfile(join('../adversary_strongest-5-word-swap/pos/', f))]
     negativeFiles = ['../adversary_strongest-5-word-swap/neg/' + f for f in listdir('../adversary_strongest-5-word-swap/neg') if isfile(join('../adversary_strongest-5-word-swap/neg/', f))]
+elif jsma_adversary:
+    positiveFiles = ['../adversary_JSMA/pos/' + f for f in listdir('../adversary_JSMA/pos') if isfile(join('../adversary_JSMA/pos/', f))]
+    negativeFiles = ['../adversary_JSMA/neg/' + f for f in listdir('../adversary_JSMA/neg') if isfile(join('../adversary_JSMA/neg/', f))]
+
 
 
 

@@ -14,6 +14,9 @@ To test model on strongest-3-word-swap adversary, run "python nb_test.py --stron
 To test model on strongest-5-word-swap adversary, run "python nb_test.py --strongest_5_word_adversary"
     This adversary replaces the five words that most strongly align with the correct classification
     with five words that most strongly align with the incorrect classification.
+To test model on JSMA adversary, run "python nb_test.py --JSMA_adversary"
+    This adversary replaces words at the end of the review with adversarial words based on the JSMA
+    method. It replaces words until the review becomes adversarial or the 35-word limit is reached.
 
 To get most positive-leaning and most negative-leaning words, run 
     "python model_analysis.py --number k" where k is the number of top
