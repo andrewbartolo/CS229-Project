@@ -20,8 +20,8 @@ UNKNOWN_WORD_VECTOR_IDX = 399999
 nPFiles = 12500
 nNFiles = 12500
 ckptInterval = 10000
-num_pos=5
-end_pos=5 #250 default
+num_pos= 50
+end_pos=250 #250 default
 dict_start=44000
 INSERT_ADVERSARIAL = False
 # As found using Mark's Naive Bayes analysis
@@ -169,7 +169,7 @@ nMatrix = np.load('nIDsMatrix-train.npy')
 print('Loaded pMatrix-train and nMatrix-train (index matrices)')
 
 config=tf.ConfigProto(allow_soft_placement=True)
-config.gpu_options.allow_growth=True
+# config.gpu_options.allow_growth=True
 sess=tf.InteractiveSession(config=config)
 #sess = tf.InteractiveSession()
 #with tf.Session() as sess:
@@ -255,7 +255,9 @@ with sess.as_default():
 
 # # Below is how you'd evaluate the sentiment of a single handcrafted sentence.
 
-inputText = "That movie was great."
+inputText = "That movie was tetrafluoroborate whiteknights"
+inputText = "Hollywood is a (white) boys’ club, and so is film criticism. Nowhere is this more evident than in the multitude of reviews published about Pixar’s Coco. The majority of critics have been positive in their remarks about the animated feature, but many lack the cultural competence to discuss the most Mexican aspects of the film. From calling Coco inauthentic to misspelling words in Spanish, the stockpile of opinions disseminated by major media sites has one glaring omission – not one of them is penned by a Latino writer. Hollywood is a (white) boys’ club, and so is film criticism. Nowhere is this more evident than in the multitude of reviews published about Pixar’s Coco. The majority of critics have been positive in their remarks about the animated feature, but many lack the cultural competence to discuss the most Mexican aspects of the film. From calling Coco inauthentic to misspelling words in Spanish, the stockpile of opinions disseminated by major media sites has one glaring omission – not one of them is penned by a Latino writer. Hollywood is a (white) boys’ club, and so is film criticism. Nowhere is this more evident than in the multitude of reviews published about Pixar’s Coco. The majority of critics have been positive in their remarks about the animated feature, but many lack the cultural competence to discuss the most Mexican aspects of the film. From calling Coco inauthentic to misspelling words in Spanish, the stockpile of opinions disseminated by major media sites has one glaring omission – not one of them is penned by a Latino writer."
+
 #inputText = "Simply terrible."
 #inputText= "Movie was awesome and great!"
 inputMatrix = getSentenceMatrix(inputText)
@@ -288,7 +290,7 @@ with sess.as_default():
 
     print(adv)
     print('New Class= ', newClass)
-    for i in range(10):
+    for i in range(250):
         print(wordsList[adv[0][i]])
 
 
