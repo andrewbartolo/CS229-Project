@@ -205,7 +205,7 @@ with sess.as_default():
 
             file_name=in_data_index
             file_name_string="%s.txt" % file_name
-            f= open(file_name_string,"w+")
+            
 
             predictedSentiment=sess.run(prediction, feed_dict = {input_data: pMatrix[np.newaxis,in_data_index]})[0]
             #import pdb; pdb.set_trace()
@@ -222,13 +222,13 @@ with sess.as_default():
                 origClass=1
                 print('Original Class= '+str(origClass))
             
-            f.write("OriginalClass, %d\n" %(origClass))
-
             adv,newClass=generateAdversary(pMatrix[np.newaxis,in_data_index],wordVectors,prediction,jac,origClass,sess)
 
             print(adv,newClass)
             print('New Class= '+str(np.argmax(sess.run(prediction, feed_dict = {input_data: pMatrix[np.newaxis,in_data_index]})[0])))
 
+            f= open(file_name_string,"w+")
+            f.write("OriginalClass, %d\n" %(origClass))
             f.write("NewClass, %d\n" %(newClass))
 
             numWordsChanged=0
