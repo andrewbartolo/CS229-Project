@@ -47,6 +47,21 @@ if ('--basic_adversary' in sys.argv):
 bayes_top_positive = ['edie', 'antwone', 'din', 'gunga', 'yokai']
 bayes_top_negative = ['boll', '410', 'uwe', 'tashan', 'hobgoblins']
 
+strongest_word_swap_adversary = False
+if ('--strongest_word_adversary' in sys.argv):
+    print 'Testing on strongest-word-swap adversary.'
+    strongest_word_swap_adversary = True
+
+strongest_3_word_swap_adversary = False
+if ('--strongest_3_word_adversary' in sys.argv):
+    print 'Testing on strongest-3-word-swap adversary.'
+    strongest_3_word_swap_adversary = True
+
+strongest_5_word_swap_adversary = False
+if ('--strongest_5_word_adversary' in sys.argv):
+    print 'Testing on strongest-5-word-swap adversary.'
+    strongest_5_word_swap_adversary = True
+
 # read in trained model
 nb_neg_weights = open("model_data/negative_weights.txt", "r")
 nb_pos_weights = open("model_data/positive_weights.txt", "r")
@@ -71,6 +86,15 @@ if handcrafted_adversarial_input:
 elif training_set_input:
     positiveFiles = ['../stanford_train/pos/' + f for f in listdir('../stanford_train/pos') if isfile(join('../stanford_train/pos/', f))]
     negativeFiles = ['../stanford_train/neg/' + f for f in listdir('../stanford_train/neg') if isfile(join('../stanford_train/neg/', f))]
+elif strongest_word_swap_adversary:
+    positiveFiles = ['../adversary_strongest-word-swap/pos/' + f for f in listdir('../adversary_strongest-word-swap/pos') if isfile(join('../adversary_strongest-word-swap/pos/', f))]
+    negativeFiles = ['../adversary_strongest-word-swap/neg/' + f for f in listdir('../adversary_strongest-word-swap/neg') if isfile(join('../adversary_strongest-word-swap/neg/', f))]
+elif strongest_3_word_swap_adversary:
+    positiveFiles = ['../adversary_strongest-3-word-swap/pos/' + f for f in listdir('../adversary_strongest-3-word-swap/pos') if isfile(join('../adversary_strongest-3-word-swap/pos/', f))]
+    negativeFiles = ['../adversary_strongest-3-word-swap/neg/' + f for f in listdir('../adversary_strongest-3-word-swap/neg') if isfile(join('../adversary_strongest-3-word-swap/neg/', f))]
+elif strongest_5_word_swap_adversary:
+    positiveFiles = ['../adversary_strongest-5-word-swap/pos/' + f for f in listdir('../adversary_strongest-5-word-swap/pos') if isfile(join('../adversary_strongest-5-word-swap/pos/', f))]
+    negativeFiles = ['../adversary_strongest-5-word-swap/neg/' + f for f in listdir('../adversary_strongest-5-word-swap/neg') if isfile(join('../adversary_strongest-5-word-swap/neg/', f))]
 
 
 
