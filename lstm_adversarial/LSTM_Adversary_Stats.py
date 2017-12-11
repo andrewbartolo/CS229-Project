@@ -14,8 +14,7 @@ for file in os.listdir(directory):
 
         if f.mode == 'r': 
  			contents =f.read()
-        	#print contents
-    		fl =f.readlines()
+ 			fl =f.readlines()
    			for x in fl:
    				print x
 
