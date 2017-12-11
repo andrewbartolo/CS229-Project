@@ -24,7 +24,7 @@ num_pos= 35
 end_pos=250 #250 default
 dict_start=44000
 start_ind=1000
-end_ind=1010
+end_ind=1100
 INSERT_ADVERSARIAL = False
 # As found using Mark's Naive Bayes analysis
 advExsPos = ['edie', 'antwone', 'din', 'gunga', 'yokai']
@@ -189,9 +189,9 @@ with sess.as_default():
     for in_data_index in range(start_ind,end_ind):
         print('Input Data Index= '+str(in_data_index))
 
-        pdb.set_trace()
+        #pdb.set_trace()
 
-        if len(pMatrix[in_data_index,pMatrix[in_data_index,:]>0])==250:
+        if pMatrix[in_data_index,249]>0:
             predictedSentiment=sess.run(prediction, feed_dict = {input_data: pMatrix[np.newaxis,in_data_index]})[0]
             #import pdb; pdb.set_trace()
             print(pMatrix[np.newaxis,in_data_index])
