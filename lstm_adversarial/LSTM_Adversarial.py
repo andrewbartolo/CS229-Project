@@ -24,8 +24,8 @@ ckptInterval = 10000
 num_pos= 35
 end_pos=250 #250 default
 dict_start=44000
-start_ind=1000
-end_ind=1024
+start_ind=2000
+end_ind=2050
 INSERT_ADVERSARIAL = False
 # As found using Mark's Naive Bayes analysis
 advExsPos = ['edie', 'antwone', 'din', 'gunga', 'yokai']
