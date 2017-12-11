@@ -15,6 +15,7 @@ import datetime
 from bisect import bisect_left
 import pdb
 import time 
+import copy
 
 UNKNOWN_WORD_VECTOR_IDX = 399999
 nPFiles = 12500
@@ -210,6 +211,8 @@ with sess.as_default():
             #import pdb; pdb.set_trace()
             print(pMatrix[np.newaxis,in_data_index])
 
+            inputDataCopy=copy.copy(pMatrix[np.newaxis,in_data_index])
+
             if predictedSentiment[0]>predictedSentiment[1]:
                 jac = sess.run([jac for jac in jacobian['0']], feed_dict = {input_data: pMatrix[np.newaxis,in_data_index]})
                 origClass=0
@@ -231,19 +234,25 @@ with sess.as_default():
             numWordsChanged=0
             wordPos=[]
 
-            pdb.set_trace()
+            #pdb.set_trace()
             for currWordPos in range(250):
-                if pMatrix[in_data_index,currWordPos]!=adv[0,currWordPos]:
+                if inputDataCopy[0,currWordPos]!=adv[0,currWordPos]:
                     numWordsChanged=numWordsChanged+1
                     wordPos.append(currWordPos)
 
             f.write("NumberWordsChanged, %d\n" %(numWordsChanged))
+
+            f.write("WordPositions\n")
+
+            wordPos=wordPos[np.newaxis,0]
             for item in wordPos:
                 f.write("%s\n" % item)
 
-            for item in pMatrix[np.newaxis,in_data_index]:
+            f.write("OldWordVectorPositions\n")
+            for item in inputDataCopy:
                 f.write("%s\n" % item)
 
+            f.write("NewWordVectorPositions\n")
             for item in adv:
                 f.write("%s\n" % item)
 
