@@ -247,8 +247,9 @@ with sess.as_default():
 
 # # Below is how you'd evaluate the sentiment of a single handcrafted sentence.
 
-inputText = "That movie was great."
+#inputText = "That movie was great."
 #inputText = "Simply terrible."
+inputText= "Movie was awesome and great!"
 inputMatrix = getSentenceMatrix(inputText)
 
 #
@@ -279,7 +280,8 @@ with sess.as_default():
 
     print(adv)
     print('New Class= ', newClass)
-    #print('Adversary= ', wordsList[adv])
+    for i in range(4):
+        print(wordsList[adv[0][i]])
 
 
 # # In[14]:
