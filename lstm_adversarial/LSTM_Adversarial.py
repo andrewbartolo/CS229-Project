@@ -199,6 +199,11 @@ with sess.as_default():
         #pdb.set_trace()
 
         if pMatrix[in_data_index,249]>0:
+
+            file_name=in_data_index
+            file_name_string=[str(file_name)+'.txt']
+            f= open(file_name_string,"w+")
+
             predictedSentiment=sess.run(prediction, feed_dict = {input_data: pMatrix[np.newaxis,in_data_index]})[0]
             #import pdb; pdb.set_trace()
             print(pMatrix[np.newaxis,in_data_index])
@@ -206,70 +211,39 @@ with sess.as_default():
             if predictedSentiment[0]>predictedSentiment[1]:
                 jac = sess.run([jac for jac in jacobian['0']], feed_dict = {input_data: pMatrix[np.newaxis,in_data_index]})
                 origClass=0
-                print('Original Class= '+str(0))
+                print('Original Class= '+str(origClass))
             else:
                 jac = sess.run([jac for jac in jacobian['1']], feed_dict = {input_data: pMatrix[np.newaxis,in_data_index]})
                 origClass=1
-                print('Original Class= '+str(1))
-    
+                print('Original Class= '+str(origClass))
+            
+            f.write("Original Class, %d\n" %(origClass))
+
             adv,newClass=generateAdversary(pMatrix[np.newaxis,in_data_index],wordVectors,prediction,jac,origClass,sess)
 
             print(adv,newClass)
             print('New Class= '+str(np.argmax(sess.run(prediction, feed_dict = {input_data: pMatrix[np.newaxis,in_data_index]})[0])))
+
+            f.write("New Class, %d\n" %(newClass))
+
+            for item in pMatrix[in_data_index]:
+                thefile.write("%s\n" % item)
+
+            for item in adv:
+                thefile.write("%s\n" % item)
+
             t2=time.time()
 
             print('time for single instance= '+str(t2-t1))
             print('time for creating jacobian= '+str(t1-t0))
+
+            f.close()
         else:
             print('DITCHED EXAMPLE!')
 #pdb.set_trace()
 
 
-# pMatrix = np.load('pIDsMatrix-train.npy')
-# nMatrix = np.load('nIDsMatrix-train.npy')
-# print('Loaded pMatrix-train and nMatrix-train (index matrices)')
-
-
-
-# ##### Begin the accuracy assessment #####
-
-# # TODO go back and vectorize (currently only processes one review per session run)
-# # TODO maybe dedup positive and negative inference
-# posCorrect = negCorrect = 0
-# inputMatrix = np.zeros([batchSize, maxSeqLength],dtype='int32')
-
-# for idx, review in enumerate(pMatrix):
-#     inputMatrix[0] = review
-#     if INSERT_ADVERSARIAL:
-#         # replace the first word with an adversarial word
-#         inputMatrix[0][0] = binarySearchIndex(wordsList, negAdvWord())
-#     predictedSentiment = sess.run(prediction, {input_data: inputMatrix})[0]
-    
-#     # classify
-#     if predictedSentiment[0] > predictedSentiment[1]:
-#         posCorrect = posCorrect + 1
-    
-#     print("Finished %d pos reviews; accuracy %f" % (idx, float(posCorrect)/(idx+1)))
-# print("Finished classifying all positive reviews: %d out of %d correct.", (posCorrect, nPFiles))
-
-# # TODO dedup with above^^^^
-# for idx, review in enumerate(nMatrix):
-#     inputMatrix[0] = review
-#     if INSERT_ADVERSARIAL:
-#         # replace the first word with an adversarial word
-#         inputMatrix[0][0] = binarySearchIndex(wordsList, posAdvWord())
-#     predictedSentiment = sess.run(prediction, {input_data: inputMatrix})[0]
-    
-#     # classify
-#     if predictedSentiment[0] <= predictedSentiment[1]:
-#         negCorrect = negCorrect + 1
-    
-#     print("Finished %d neg reviews; accuracy %f" % (idx, float(negCorrect)/(idx+1)))
-# print("Finished classifying all positive reviews: %d out of %d correct.", (negCorrect, nNFiles))
-
-# print("Done.")
-
-# sys.exit(0)
+'''
 
 # # Below is how you'd evaluate the sentiment of a single handcrafted sentence.
 
@@ -310,6 +284,7 @@ with sess.as_default():
     for i in range(250):
         print(wordsList[adv[0][i]])
 
+'''
 
 # # In[14]:
 
