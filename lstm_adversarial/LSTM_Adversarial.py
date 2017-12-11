@@ -231,6 +231,7 @@ with sess.as_default():
             numWordsChanged=0
             wordPos=[]
 
+            pdb.set_trace()
             for currWordPos in range(250):
                 if pMatrix[in_data_index,currWordPos]!=adv[0,currWordPos]:
                     numWordsChanged=numWordsChanged+1
@@ -240,7 +241,7 @@ with sess.as_default():
             for item in wordPos:
                 f.write("%s\n" % item)
 
-            for item in pMatrix[in_data_index]:
+            for item in pMatrix[np.newaxis,in_data_index]:
                 f.write("%s\n" % item)
 
             for item in adv:
