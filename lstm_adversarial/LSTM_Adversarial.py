@@ -207,7 +207,7 @@ with sess.as_default():
             if pMatrix[in_data_index,249]>0:
 
                 file_name=in_data_index
-                file_name_string="%s.txt" % file_name
+                file_name_string="adversary_info/%s.txt" % file_name
             
 
                 predictedSentiment=sess.run(prediction, feed_dict = {input_data: pMatrix[np.newaxis,in_data_index]})[0]
