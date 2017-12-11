@@ -68,7 +68,7 @@ def generateAdversary(data, wordVectors, prediction, jacobian, origClass, sess):
         curr_word=data_adv_wordEmbedded[wordPos,:]
         curr_word=tf.reshape(curr_word,[1,50])
 
-        pdb.set_trace()
+        # pdb.set_trace()
         dist_curr_word=tf.abs(tf.matmul(tf.sign(curr_word-wordVectors[dict_start:,:]),tf.sign(jacobian[wordPos-end_pos].T)))
         dist_matrix = sess.run(dist_curr_word)
         min_dist = np.amin(dist_matrix)
@@ -77,7 +77,7 @@ def generateAdversary(data, wordVectors, prediction, jacobian, origClass, sess):
         
         #data_adv_wordEmbedded[wordPos,:]=wordVectors[tf.argmin(dist_curr_word),:]
         #data_adv_wordEmbedded=tf.reshape(data_adv,[1,50])
-        pdb.set_trace()
+        # pdb.set_trace()
 
         # data_adv[0,wordPos]=sess.run(tf.argmin(dist_curr_word))+dict_start
         data_adv[0, wordPos] = min_indices[location] + dict_start
