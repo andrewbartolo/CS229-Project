@@ -244,9 +244,9 @@ with sess.as_default():
 
             f.write("WordPositions\n")
 
-            wordPos=wordPos[np.newaxis,0]
             for item in wordPos:
-                f.write("%s\n" % item)
+                f.write("%s\t" % item)
+            f.write("\n")
 
             f.write("OldWordVectorPositions\n")
             for item in inputDataCopy:
