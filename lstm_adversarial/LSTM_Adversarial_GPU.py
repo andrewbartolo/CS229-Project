@@ -15,17 +15,14 @@ import datetime
 from bisect import bisect_left
 import pdb
 import time 
-import copy
 
 UNKNOWN_WORD_VECTOR_IDX = 399999
 nPFiles = 12500
 nNFiles = 12500
 ckptInterval = 10000
-num_pos= 35
-end_pos=250 #250 default
+num_pos=5
+end_pos=5 #250 default
 dict_start=44000
-start_ind=2000
-end_ind=2050
 INSERT_ADVERSARIAL = False
 # As found using Mark's Naive Bayes analysis
 advExsPos = ['edie', 'antwone', 'din', 'gunga', 'yokai']
@@ -71,23 +68,16 @@ def generateAdversary(data, wordVectors, prediction, jacobian, origClass, sess):
         curr_word=data_adv_wordEmbedded[wordPos,:]
         curr_word=tf.reshape(curr_word,[1,50])
 
-        # pdb.set_trace()
-        
-        #dist_curr_word=tf.abs(tf.matmul(tf.sign(curr_word-wordVectors[dict_start:,:]),tf.sign(jacobian[wordPos-end_pos].T)))
-        #dist_matrix = sess.run(dist_curr_word)
-
-        curr_word_np=sess.run(curr_word)
-        #jacobian_np=sess.run(jacobian)
-        dist_matrix=np.abs(np.matmul(np.sign(curr_word_np-wordVectors[dict_start:,:]),np.sign(jacobian[wordPos-end_pos].T)))
-
-
-        min_dist = np.amin(dist_matrix)
-        min_indices = np.ravel(np.where(dist_matrix == min_dist)[0])
+        pdb.set_trace()
+        dist_curr_word=tf.abs(tf.matmul(tf.sign(curr_word-wordVectors[dict_start:,:]),tf.sign(jacobian[wordPos-end_pos].T)))
+        dist_matrix = sess.run(dist_curr_word)
+        min_dist = np.minimum(dist_matrix)
+        min_indices = np.where(dist_matrix == min_dist)
         location = np.random.randint(np.size(min_indices), size = 1)
         
         #data_adv_wordEmbedded[wordPos,:]=wordVectors[tf.argmin(dist_curr_word),:]
         #data_adv_wordEmbedded=tf.reshape(data_adv,[1,50])
-        # pdb.set_trace()
+        pdb.set_trace()
 
         # data_adv[0,wordPos]=sess.run(tf.argmin(dist_curr_word))+dict_start
         data_adv[0, wordPos] = min_indices[location] + dict_start
@@ -178,10 +168,8 @@ pMatrix = np.load('pIDsMatrix-train.npy')
 nMatrix = np.load('nIDsMatrix-train.npy')
 print('Loaded pMatrix-train and nMatrix-train (index matrices)')
 
-#pdb.set_trace()
-
 config=tf.ConfigProto(allow_soft_placement=True)
-# config.gpu_options.allow_growth=True
+config.gpu_options.allow_growth=True
 sess=tf.InteractiveSession(config=config)
 #sess = tf.InteractiveSession()
 #with tf.Session() as sess:
@@ -195,84 +183,79 @@ with sess.as_default():
     
     #tf.global_variables_initializer()
     tf.set_random_seed(100)
+    predictedSentiment=sess.run(prediction, feed_dict = {input_data: pMatrix[np.newaxis,2000]})[0]
+    #import pdb; pdb.set_trace()
+    print(pMatrix[np.newaxis,2000])
 
-    for in_data_index in range(start_ind,end_ind):
-        print('Input Data Index= '+str(in_data_index))
+    if predictedSentiment[0]>predictedSentiment[1]:
+        jac = sess.run([jac for jac in jacobian['0']], feed_dict = {input_data: pMatrix[np.newaxis,2000]})
+        origClass=0
+        print('Original Class= '+str(0))
+    else:
+        jac = sess.run([jac for jac in jacobian['1']], feed_dict = {input_data: pMatrix[np.newaxis,2000]})
+        origClass=1
+        print('Original Class= '+str(1))
+    
+    adv,newClass=generateAdversary(pMatrix[np.newaxis,2000],wordVectors,prediction,jac,origClass,sess)
 
-        #pdb.set_trace()
+    print(adv,newClass)
+    print('New Class= '+str(np.argmax(sess.run(prediction, feed_dict = {input_data: pMatrix[np.newaxis,2000]})[0])))
+    t2=time.time()
 
-        if pMatrix[in_data_index,249]>0:
-
-            file_name=in_data_index
-            file_name_string="%s.txt" % file_name
-            
-
-            predictedSentiment=sess.run(prediction, feed_dict = {input_data: pMatrix[np.newaxis,in_data_index]})[0]
-            #import pdb; pdb.set_trace()
-            print(pMatrix[np.newaxis,in_data_index])
-
-            inputDataCopy=copy.copy(pMatrix[np.newaxis,in_data_index])
-
-            if predictedSentiment[0]>predictedSentiment[1]:
-                jac = sess.run([jac for jac in jacobian['0']], feed_dict = {input_data: pMatrix[np.newaxis,in_data_index]})
-                origClass=0
-                print('Original Class= '+str(origClass))
-            else:
-                jac = sess.run([jac for jac in jacobian['1']], feed_dict = {input_data: pMatrix[np.newaxis,in_data_index]})
-                origClass=1
-                print('Original Class= '+str(origClass))
-            
-            adv,newClass=generateAdversary(pMatrix[np.newaxis,in_data_index],wordVectors,prediction,jac,origClass,sess)
-
-            print(adv,newClass)
-            print('New Class= '+str(np.argmax(sess.run(prediction, feed_dict = {input_data: pMatrix[np.newaxis,in_data_index]})[0])))
-
-            f= open(file_name_string,"w+")
-            f.write("OriginalClass, %d\n" %(origClass))
-            f.write("NewClass, %d\n" %(newClass))
-
-            numWordsChanged=0
-            wordPos=[]
-
-            #pdb.set_trace()
-            for currWordPos in range(250):
-                if inputDataCopy[0,currWordPos]!=adv[0,currWordPos]:
-                    numWordsChanged=numWordsChanged+1
-                    wordPos.append(currWordPos)
-
-            f.write("NumberWordsChanged, %d\n" %(numWordsChanged))
-
-            f.write("WordPositions\n")
-
-            for item in wordPos:
-                f.write("%s\t" % item)
-            f.write("\n")
-
-            f.write("OldWordVectorPositions\n")
-            for item in inputDataCopy:
-                f.write("%s\n" % item)
-
-            f.write("NewWordVectorPositions\n")
-            for item in adv:
-                f.write("%s\n" % item)
-
-            t2=time.time()
-
-            print('time for single instance= '+str(t2-t1))
-            print('time for creating jacobian= '+str(t1-t0))
-
-            f.close()
-        else:
-            print('DITCHED EXAMPLE!')
+    print('time for single instance= '+str(t2-t1))
+    print('time for creating jacobian= '+str(t1-t0))
 #pdb.set_trace()
 
 
-'''
+# pMatrix = np.load('pIDsMatrix-train.npy')
+# nMatrix = np.load('nIDsMatrix-train.npy')
+# print('Loaded pMatrix-train and nMatrix-train (index matrices)')
+
+
+
+# ##### Begin the accuracy assessment #####
+
+# # TODO go back and vectorize (currently only processes one review per session run)
+# # TODO maybe dedup positive and negative inference
+# posCorrect = negCorrect = 0
+# inputMatrix = np.zeros([batchSize, maxSeqLength],dtype='int32')
+
+# for idx, review in enumerate(pMatrix):
+#     inputMatrix[0] = review
+#     if INSERT_ADVERSARIAL:
+#         # replace the first word with an adversarial word
+#         inputMatrix[0][0] = binarySearchIndex(wordsList, negAdvWord())
+#     predictedSentiment = sess.run(prediction, {input_data: inputMatrix})[0]
+    
+#     # classify
+#     if predictedSentiment[0] > predictedSentiment[1]:
+#         posCorrect = posCorrect + 1
+    
+#     print("Finished %d pos reviews; accuracy %f" % (idx, float(posCorrect)/(idx+1)))
+# print("Finished classifying all positive reviews: %d out of %d correct.", (posCorrect, nPFiles))
+
+# # TODO dedup with above^^^^
+# for idx, review in enumerate(nMatrix):
+#     inputMatrix[0] = review
+#     if INSERT_ADVERSARIAL:
+#         # replace the first word with an adversarial word
+#         inputMatrix[0][0] = binarySearchIndex(wordsList, posAdvWord())
+#     predictedSentiment = sess.run(prediction, {input_data: inputMatrix})[0]
+    
+#     # classify
+#     if predictedSentiment[0] <= predictedSentiment[1]:
+#         negCorrect = negCorrect + 1
+    
+#     print("Finished %d neg reviews; accuracy %f" % (idx, float(negCorrect)/(idx+1)))
+# print("Finished classifying all positive reviews: %d out of %d correct.", (negCorrect, nNFiles))
+
+# print("Done.")
+
+# sys.exit(0)
 
 # # Below is how you'd evaluate the sentiment of a single handcrafted sentence.
 
-inputText = "That movie was tetrafluoroborate whiteknights"
-inputText = "Hollywood is a (white) boys’ club, and so is film criticism. Nowhere is this more evident than in the multitude of reviews published about Pixar’s Coco. The majority of critics have been positive in their remarks about the animated feature, but many lack the cultural competence to discuss the most Mexican aspects of the film. From calling Coco inauthentic to misspelling words in Spanish, the stockpile of opinions disseminated by major media sites has one glaring omission – not one of them is penned by a Latino writer. Hollywood is a (white) boys’ club, and so is film criticism. Nowhere is this more evident than in the multitude of reviews published about Pixar’s Coco. The majority of critics have been positive in their remarks about the animated feature, but many lack the cultural competence to discuss the most Mexican aspects of the film. From calling Coco inauthentic to misspelling words in Spanish, the stockpile of opinions disseminated by major media sites has one glaring omission – not one of them is penned by a Latino writer. Hollywood is a (white) boys’ club, and so is film criticism. Nowhere is this more evident than in the multitude of reviews published about Pixar’s Coco. The majority of critics have been positive in their remarks about the animated feature, but many lack the cultural competence to discuss the most Mexican aspects of the film. From calling Coco inauthentic to misspelling words in Spanish, the stockpile of opinions disseminated by major media sites has one glaring omission – not one of them is penned by a Latino writer."
+inputText = "That movie was great."
 #inputText = "Simply terrible."
 #inputText= "Movie was awesome and great!"
 inputMatrix = getSentenceMatrix(inputText)
@@ -305,10 +288,9 @@ with sess.as_default():
 
     print(adv)
     print('New Class= ', newClass)
-    for i in range(250):
+    for i in range(10):
         print(wordsList[adv[0][i]])
 
-'''
 
 # # In[14]:
 
