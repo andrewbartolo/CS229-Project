@@ -332,6 +332,9 @@ with sess.as_default():
                 f.close()
             else:
                 print('DITCHED EXAMPLE!')
+
+        else:
+            print('Wrong start_idx to end_idx range!')
 #pdb.set_trace()
 
 
