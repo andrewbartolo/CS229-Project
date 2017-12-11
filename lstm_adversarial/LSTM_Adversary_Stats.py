@@ -26,7 +26,6 @@ for fname in advFiles:
         original_classification = int(f.readline().split(' ')[-1].replace('\n', ''))
         new_classification = int(f.readline().split(' ')[-1].replace('\n', ''))
         num_words_changed = int(f.readline().split(' ')[-1].replace('\n', ''))
-        avg_num_words_changed += num_words_changed
         f.readline() # "WordPositions"
         f.readline() # WordPositions information
         f.readline() # "OldWordVectorPositions"
@@ -70,6 +69,7 @@ for fname in advFiles:
                 originally_pos_classified_pos += 1
                 if (new_classification == 1):
                     originally_pos_changed_neg += 1
+                    avg_num_words_changed += num_words_changed
                     with open("../adversary_JSMA/pos/" + fname.split('/')[-1], "w") as out:
                         out.write(new_review.encode("UTF-8"))
         else:
@@ -78,6 +78,7 @@ for fname in advFiles:
                 originally_neg_classified_neg += 1
                 if (new_classification == 0):
                     originally_neg_changed_pos += 1
+                    avg_num_words_changed += num_words_changed
                     with open("../adversary_JSMA/neg/" + fname.split('/')[-1], "w") as out:
                         out.write(new_review.encode("UTF-8"))
 avg_num_words_changed /= float(total)
