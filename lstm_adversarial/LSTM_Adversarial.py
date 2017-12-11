@@ -24,8 +24,8 @@ ckptInterval = 10000
 num_pos= 35
 end_pos=250 #250 default
 dict_start=44000
-start_ind=2000
-end_ind=2050
+start_ind=23100
+end_ind=23200
 INSERT_ADVERSARIAL = False
 posFileSize=12500
 
@@ -207,7 +207,7 @@ with sess.as_default():
             if pMatrix[in_data_index,249]>0:
 
                 file_name=in_data_index
-                file_name_string="%s.txt" % file_name
+                file_name_string="adversary_info/%s.txt" % file_name
             
 
                 predictedSentiment=sess.run(prediction, feed_dict = {input_data: pMatrix[np.newaxis,in_data_index]})[0]
@@ -273,7 +273,7 @@ with sess.as_default():
             if nMatrix[in_data_index-posFileSize,249]>0:
 
                 file_name=in_data_index
-                file_name_string="%s.txt" % file_name
+                file_name_string="adversary_info/%s.txt" % file_name
             
                 predictedSentiment=sess.run(prediction, feed_dict = {input_data: nMatrix[np.newaxis,in_data_index-posFileSize]})[0]
                 #import pdb; pdb.set_trace()
