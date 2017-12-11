@@ -232,7 +232,7 @@ with sess.as_default():
             wordPos=[]
 
             for currWordPos in range(250):
-                if pMatrix[in_data_index,currWordPos]!=adv[currWordPos]:
+                if pMatrix[in_data_index,currWordPos]!=adv[0,currWordPos]:
                     numWordsChanged=numWordsChanged+1
                     wordPos.append(currWordPos)
 
