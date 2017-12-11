@@ -49,9 +49,8 @@ def getSentenceMatrix(sentence):
     split = cleanSentence.split()
     count = 0
     for idxCtr, word in enumerate(split):
-        count = count + 1
-        if(count > 250):
-            break
+        if idxCtr>=250:
+            break 
         try:
             #sentenceMatrix[0, idxCtr] = binarySearchIndex(wordsList, word)
             sentenceMatrix[0, idxCtr] = binarySearchIndex(wordsList, word)
