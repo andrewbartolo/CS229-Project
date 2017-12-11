@@ -227,10 +227,10 @@ with sess.as_default():
             f.write("New Class, %d\n" %(newClass))
 
             for item in pMatrix[in_data_index]:
-                thefile.write("%s\n" % item)
+                f.write("%s\n" % item)
 
             for item in adv:
-                thefile.write("%s\n" % item)
+                f.write("%s\n" % item)
 
             t2=time.time()
 
