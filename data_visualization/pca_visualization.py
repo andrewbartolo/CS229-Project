@@ -78,6 +78,8 @@ for i in range(ndims):
         plt.scatter(dataND[:len(dataND)/2,i], dataND[:len(dataND)/2,j], c='r')
         plt.scatter(dataND[len(dataND)/2:,i], dataND[len(dataND)/2:,j], c='k')
         ##plt.scatter(data2D[:,0], data2D[:,1], c='k')
+        plt.ylabel('PC %d' % j)
+        plt.xlabel('PC %d' % i)
         plt.show()
 
 #https://stackoverflow.com/questions/28160335/plot-a-document-tfidf-2d-graph/28205420#28205420

@@ -13,6 +13,8 @@ originally_neg_changed_pos = 0
 originally_pos = 0
 originally_pos_classified_pos = 0
 originally_pos_changed_neg = 0
+buckets = np.zeros((36,1))
+max_words_changed = 35
 
 # not the embeddings matrix, but the list
 wordsList = np.load('wordsList-lexic-sorted.npy').tolist()
@@ -70,6 +72,7 @@ for fname in advFiles:
                 if (new_classification == 1):
                     originally_pos_changed_neg += 1
                     avg_num_words_changed += num_words_changed
+                    buckets[num_words_changed] += 1
                     with open("../adversary_JSMA/pos/" + fname.split('/')[-1], "w") as out:
                         out.write(new_review.encode("UTF-8"))
         else:
@@ -79,6 +82,7 @@ for fname in advFiles:
                 if (new_classification == 0):
                     originally_neg_changed_pos += 1
                     avg_num_words_changed += num_words_changed
+                    buckets[num_words_changed] += 1
                     with open("../adversary_JSMA/neg/" + fname.split('/')[-1], "w") as out:
                         out.write(new_review.encode("UTF-8"))
 avg_num_words_changed /= float(total)
@@ -93,6 +97,8 @@ print "\t# originally negative files changed to positive: " + str(originally_neg
 print "Average # words changed: " + str(avg_num_words_changed)
 print "Adversary's success: " + str((originally_pos_changed_neg + originally_neg_changed_pos)*100/float(
     originally_pos_classified_pos + originally_neg_classified_neg)) + "%"
+print "buckets: " + str(buckets)
+print "sum(buckets): " + str(sum(buckets))
 
 '''
 import os
